@@ -127,7 +127,7 @@ export const SendMessageParams = BaseMessageParams.extend({
         .regex(/^[A-Za-z0-9._~-]+$/)
         .optional()
         .describe(
-            'Deduplication key, auto-generated when omitted. A repeated call with the same key returns the existing message instead of delivering a duplicate; a different body under the same key returns a conflict error. Use a fresh key only for a genuinely new send'
+            'Deduplication key. Retain and reuse an explicit key when retrying the same send after a timeout or lost response; the API returns the existing message, or a conflict if the body changed. When omitted, a new key is generated for each tool call and only reused by SDK retries within that call. Use a fresh key for each new send, including intentional identical sends'
         ),
 })
 
@@ -151,7 +151,7 @@ export const ReplyToMessageParams = BaseMessageParams.extend({
         .regex(/^[A-Za-z0-9._~-]+$/)
         .optional()
         .describe(
-            'Deduplication key, auto-generated when omitted. A repeated call with the same key returns the existing message instead of delivering a duplicate; a different body under the same key returns a conflict error. Use a fresh key only for a genuinely new send'
+            'Deduplication key. Retain and reuse an explicit key when retrying the same send after a timeout or lost response; the API returns the existing message, or a conflict if the body changed. When omitted, a new key is generated for each tool call and only reused by SDK retries within that call. Use a fresh key for each new send, including intentional identical sends'
         ),
     // Mirrors the API's ReplyMessageSchema refine (agentmail-api schemas/message.ts),
     // predicate and error text both - reject the combination locally instead of
