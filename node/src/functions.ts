@@ -162,9 +162,9 @@ export async function searchMessages(client: AgentMailClient, args: z.infer<type
 
 export async function sendMessage(client: AgentMailClient, args: z.infer<typeof SendMessageParams>) {
     const { inboxId, idempotencyKey, ...body } = args
-    // The API accepts Idempotency-Key via request options. Auto-generate when omitted so
-    // timeout-and-retry doesn't double-deliver by default. The SDK's fetcher retries 408/429/5xx
-    // with the same key, so a re-POST returns the existing message_id instead of sending twice.
+    // Generate once per invocation so SDK retries reuse the same key. A separate
+    // tool invocation generates a new key; callers must retain and reuse an explicit
+    // key when retrying after a timeout or lost response.
     return client.inboxes.messages.send(inboxId, body, {
         idempotencyKey: idempotencyKey ?? randomIdempotencyKey(),
     })
@@ -172,9 +172,9 @@ export async function sendMessage(client: AgentMailClient, args: z.infer<typeof 
 
 export async function replyToMessage(client: AgentMailClient, args: z.infer<typeof ReplyToMessageParams>) {
     const { inboxId, messageId, idempotencyKey, ...body } = args
-    // The API accepts Idempotency-Key via request options. Auto-generate when omitted so
-    // timeout-and-retry doesn't double-deliver by default. The SDK's fetcher retries 408/429/5xx
-    // with the same key, so a re-POST returns the existing message_id instead of sending twice.
+    // Generate once per invocation so SDK retries reuse the same key. A separate
+    // tool invocation generates a new key; callers must retain and reuse an explicit
+    // key when retrying after a timeout or lost response.
     return client.inboxes.messages.reply(inboxId, messageId, body, {
         idempotencyKey: idempotencyKey ?? randomIdempotencyKey(),
     })
@@ -182,9 +182,9 @@ export async function replyToMessage(client: AgentMailClient, args: z.infer<type
 
 export async function forwardMessage(client: AgentMailClient, args: z.infer<typeof ForwardMessageParams>) {
     const { inboxId, messageId, idempotencyKey, ...body } = args
-    // The API accepts Idempotency-Key via request options. Auto-generate when omitted so
-    // timeout-and-retry doesn't double-deliver by default. The SDK's fetcher retries 408/429/5xx
-    // with the same key, so a re-POST returns the existing message_id instead of sending twice.
+    // Generate once per invocation so SDK retries reuse the same key. A separate
+    // tool invocation generates a new key; callers must retain and reuse an explicit
+    // key when retrying after a timeout or lost response.
     return client.inboxes.messages.forward(inboxId, messageId, body, {
         idempotencyKey: idempotencyKey ?? randomIdempotencyKey(),
     })
